@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: twitter-to-pubsub
+  labels:
+    name: twitter-to-pubsub
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: twitter-to-pubsub
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: pubsub-key
+      containers:
+      - name: twitter-to-pubsub
+        # Update this with your GCP project
+        image: gcr.io/<GCP_PROJECT>/twitter-to-pubsub:latest
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/pubsub-app.json
+        - name: PROCESSINGSCRIPT
+          value: twitter-to-pubsub
+        # Change this to your GCP project
+        - name: GCP_PROJECT
+          value: xxxx
+        # Change this to your pubsub topic
+        - name: PUBSUB_TOPIC
+          value: xxxx
+        # Change the following four settings to your twitter credentials
+        # information.
+        - name: CONSUMERKEY
+          value: xxxx
+        - name: CONSUMERSECRET
+          value: xxxx
+        - name: ACCESSTOKEN
+          value: xxxx
+        - name: ACCESSTOKENSEC
+          value: xxxx
